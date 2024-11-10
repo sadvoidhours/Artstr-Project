@@ -1,4 +1,3 @@
-// authController.js
 const bcrypt = require('bcryptjs');  // Ensure bcryptjs is installed
 const UserModel = require('../models/users');
 
@@ -10,22 +9,22 @@ const testEndpoint = (req, res) => {
 // Register user logic
 const registerUser = async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { firstName, lastName, email, password } = req.body;
 
         // Check if all fields are provided
-        if (!username || !email || !password) {
-            return res.status(400).json({ msg: 'Please enter all fields' });
+        if (!firstName || !lastName || !email || !password) {
+            return res.json({ error: 'Please enter all fields' });
         }
 
         // Check if password is long enough
         if (password.length < 6) {
-            return res.status(400).json({ msg: 'Password must be at least 6 characters long' });
+            return res.json({ error: 'Password must be at least 6 characters long' });
         }
 
         // Check if user already exists
         const existingUser = await UserModel.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ msg: 'An account with this email already exists' });
+            return res.json({ error: 'An account with this email already exists' });
         }
 
         // Hash the password
@@ -33,17 +32,40 @@ const registerUser = async (req, res) => {
 
         // Create the user
         const user = await UserModel.create({
-            username,
+            firstName,
+            lastName,
             email,
             password: hashedPassword,
         });
 
-        // Send back the created user
-        return res.json(user);
+        // Send back the created user (excluding password for security)
+        const { password: _, ...userWithoutPassword } = user.toObject();
+        return res.json(userWithoutPassword);
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: 'Server error' });
     }
 };
 
-module.exports = { testEndpoint, registerUser };
+//login user logic
+const loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await UserModel.findOne({ email });
+        if (!user) {
+            return res.json({ error: 'Invalid credentials' });
+        }
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (isPasswordValid) {
+            res.json({ msg: 'Login successful' });
+        }
+
+    } catch (error) {
+        console.error(error);
+        res.json({ msg: 'Server error' });
+    }
+};
+
+
+
+module.exports = { testEndpoint, registerUser, loginUser };
