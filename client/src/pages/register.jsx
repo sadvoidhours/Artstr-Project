@@ -6,14 +6,15 @@ import { useNavigate } from 'react-router-dom';
 export default function Register() {
     const navigate = useNavigate();
     const [data, setData] = useState({
-        username: '',
+        firstName: '',
+        lastName: '',
         email: '',
         password: '',
     });
 
     const registerUser = async (e) => {
         e.preventDefault();
-        const { username, email, password } = data;
+        const { firstName, lastName, email, password } = data;
 
         try {
             const response = await axios.post('http://localhost:5000/auth/register', {
@@ -31,7 +32,7 @@ export default function Register() {
             }
         } catch (error) {
             console.error(error);
-            toast.error('Registration failed. Please try again.');
+            toast.error(console);
         }
     };
 
@@ -39,15 +40,24 @@ export default function Register() {
         <div className="Register">
             <h1>Register</h1>
             <form onSubmit={registerUser}>
-                <label htmlFor="username">Username</label>
+                <label htmlFor="firstName">First Name</label>
                 <input
                     type="text"
-                    id="username"
-                    placeholder="Enter your Username"
-                    value={data.username}
-                    onChange={(e) => setData({ ...data, username: e.target.value })}
-                    required
+                    id="firstName"
+                    placeholder="Enter your First Name"
+                    value={data.firstName}
+                    onChange={(e) => setData({ ...data, firstName: e.target.value })}
                 />
+
+                <label htmlFor="lastName">Last Name</label>
+                <input
+                    type="text"
+                    id="lastName"
+                    placeholder="Enter your Last Name"
+                    value={data.lastName}
+                    onChange={(e) => setData({ ...data, lastName: e.target.value })}
+                />
+
                 <label htmlFor="email">Email</label>
                 <input
                     type="email"
@@ -57,6 +67,7 @@ export default function Register() {
                     onChange={(e) => setData({ ...data, email: e.target.value })}
                     required
                 />
+
                 <label htmlFor="password">Password</label>
                 <input
                     type="password"
@@ -66,6 +77,7 @@ export default function Register() {
                     onChange={(e) => setData({ ...data, password: e.target.value })}
                     required
                 />
+
                 <button type="submit">Register</button>
             </form>
         </div>
