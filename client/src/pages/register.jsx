@@ -1,4 +1,3 @@
-// register.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -17,19 +16,18 @@ export default function Register() {
         const { username, email, password } = data;
 
         try {
-            const response = await axios.post('http://localhost:3000/auth/register', {
+            const response = await axios.post('http://localhost:5000/auth/register', {
                 username,
                 email,
                 password,
             });
 
-            // Check if there's an error in the response
-            if (response.data.error) {
-                toast.error(response.data.error);
-            } else {
+            if (response.data.message) {
+                toast.success(response.data.message);
                 setData({ username: '', email: '', password: '' });
-                toast.success('User registered successfully');
                 navigate('/login');
+            } else {
+                toast.error('Registration failed. Please try again.');
             }
         } catch (error) {
             console.error(error);
@@ -48,6 +46,7 @@ export default function Register() {
                     placeholder="Enter your Username"
                     value={data.username}
                     onChange={(e) => setData({ ...data, username: e.target.value })}
+                    required
                 />
                 <label htmlFor="email">Email</label>
                 <input
@@ -56,6 +55,7 @@ export default function Register() {
                     placeholder="Enter your Email"
                     value={data.email}
                     onChange={(e) => setData({ ...data, email: e.target.value })}
+                    required
                 />
                 <label htmlFor="password">Password</label>
                 <input
@@ -64,9 +64,10 @@ export default function Register() {
                     placeholder="Enter your Password"
                     value={data.password}
                     onChange={(e) => setData({ ...data, password: e.target.value })}
+                    required
                 />
                 <button type="submit">Register</button>
             </form>
         </div>
     );
-}
+} 

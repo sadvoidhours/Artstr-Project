@@ -1,23 +1,29 @@
-// index.js
 const express = require('express');
-const dotenv = require('dotenv').config();
-const cors = require('cors');
 const mongoose = require('mongoose');
-const app = express();
+const cors = require('cors');
+const dotenv = require('dotenv');
 
-// Enable JSON parsing
+
+
+
+
+dotenv.config(); // Ensure .env file is loaded
+
+const app = express();
+app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URL)
-    .then(() => console.log('MongoDB connected'))
-    .catch((err) => console.log('MongoDB connection error: ', err));
+// Log to verify MONGO_URI is being loaded
+console.log('Mongo URI:', process.env.MONGO_URI); // Should show the URI
 
-// CORS configuration for frontend
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+// Connect to MongoDB (remove deprecated options)
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log("MongoDB Connected"))
+    .catch((error) => console.log(error));
 
-// Use authRoutes for routes starting with '/auth'
-app.use('/auth', require('./routes/authRoutes'));  // Ensure this path is correct
 
-const PORT = 3000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.use('/auth', require('./routes/auth'));
+app.use('/api', require('./routes/products'));
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
