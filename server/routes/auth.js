@@ -1,8 +1,8 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const authMiddleware = require('../middleware/authMiddleware'); // Import authMiddleware
 const User = require('../models/User');
+const authMiddleware = require('../middleware/authMiddleware'); // Import authMiddleware
 const router = express.Router();
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -14,9 +14,9 @@ if (!JWT_SECRET) {
 
 // Register Route
 router.post('/register', async (req, res) => {
-    const { username, email, password } = req.body;
+    const { firstName, lastName, email, password } = req.body;
 
-    if (!username || !email || !password) {
+    if (!firstName || !lastName || !email || !password) {
         return res.status(400).json({ message: 'Please fill in all fields' });
     }
 
@@ -32,7 +32,8 @@ router.post('/register', async (req, res) => {
 
         // Create a new user with default usertype as 'user'
         const newUser = await User.create({
-            username,
+            firstName,
+            lastName,
             email,
             password: hashedPassword,
             usertype: 'user',
@@ -76,6 +77,7 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ message: 'Server error during login', error: error.message });
     }
 });
+
 
 // Dashboard Route (for users)
 router.get('/dashboard', authMiddleware, (req, res) => {

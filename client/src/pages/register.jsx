@@ -18,21 +18,22 @@ export default function Register() {
 
         try {
             const response = await axios.post('http://localhost:5000/auth/register', {
-                username,
+                firstName,
+                lastName,
                 email,
                 password,
             });
 
             if (response.data.message) {
                 toast.success(response.data.message);
-                setData({ username: '', email: '', password: '' });
+                setData({ firstName: '', lastName: '', email: '', password: '' });
                 navigate('/login');
             } else {
                 toast.error('Registration failed. Please try again.');
             }
         } catch (error) {
             console.error(error);
-            toast.error(console);
+            toast.error('Registration failed. Please try again.');
         }
     };
 
@@ -47,8 +48,8 @@ export default function Register() {
                     placeholder="Enter your First Name"
                     value={data.firstName}
                     onChange={(e) => setData({ ...data, firstName: e.target.value })}
+                    required
                 />
-
                 <label htmlFor="lastName">Last Name</label>
                 <input
                     type="text"
@@ -56,8 +57,8 @@ export default function Register() {
                     placeholder="Enter your Last Name"
                     value={data.lastName}
                     onChange={(e) => setData({ ...data, lastName: e.target.value })}
+                    required
                 />
-
                 <label htmlFor="email">Email</label>
                 <input
                     type="email"
@@ -67,7 +68,6 @@ export default function Register() {
                     onChange={(e) => setData({ ...data, email: e.target.value })}
                     required
                 />
-
                 <label htmlFor="password">Password</label>
                 <input
                     type="password"
@@ -77,9 +77,8 @@ export default function Register() {
                     onChange={(e) => setData({ ...data, password: e.target.value })}
                     required
                 />
-
                 <button type="submit">Register</button>
             </form>
         </div>
     );
-} 
+}
